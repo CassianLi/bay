@@ -1,0 +1,31 @@
+package model
+
+import "fmt"
+
+type Status string
+
+const (
+	StatusIdea     Status = "idea"
+	StatusActive   Status = "active"
+	StatusPaused   Status = "paused"
+	StatusKept     Status = "kept"
+	StatusArchived Status = "archived"
+	StatusTrash    Status = "trash"
+)
+
+func ParseStatus(s string) (Status, error) {
+	st := Status(s)
+	if !st.Valid() {
+		return "", fmt.Errorf("invalid status %q", s)
+	}
+	return st, nil
+}
+
+func (s Status) Valid() bool {
+	switch s {
+	case StatusIdea, StatusActive, StatusPaused, StatusKept, StatusArchived, StatusTrash:
+		return true
+	default:
+		return false
+	}
+}
