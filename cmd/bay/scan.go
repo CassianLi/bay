@@ -17,8 +17,11 @@ func newScanCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			fmt.Fprintf(cmd.OutOrStdout(), "added=%d updated=%d missing=%d\n", res.Added, res.Updated, res.Missing)
-			return nil
+			tw := newTable(cmd.OutOrStdout())
+			fmt.Fprintf(tw, "added\t%d\n", res.Added)
+			fmt.Fprintf(tw, "updated\t%d\n", res.Updated)
+			fmt.Fprintf(tw, "missing\t%d\n", res.Missing)
+			return tw.Flush()
 		},
 	}
 }

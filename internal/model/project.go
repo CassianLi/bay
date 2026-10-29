@@ -10,6 +10,7 @@ type Project struct {
 	Status        Status
 	PurposeKnown  bool
 	Summary       string
+	Note          string // latest status/set remark
 	Signals       string
 	UserSetStatus bool
 	Missing       bool

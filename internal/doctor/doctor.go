@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"text/tabwriter"
 	"time"
 
 	"github.com/jinrunli/bay/internal/model"
@@ -103,9 +104,12 @@ func (r Report) FormatText() string {
 		return "no findings\n"
 	}
 	var b strings.Builder
+	tw := tabwriter.NewWriter(&b, 0, 4, 2, ' ', 0)
+	fmt.Fprintln(tw, "KIND\tNAME\tPATH\tDETAIL")
 	for _, f := range r.Findings {
-		fmt.Fprintf(&b, "%s\t%s\t%s\t%s\t%s\n", f.Kind, f.Name, f.Root, f.Path, f.Detail)
+		fmt.Fprintf(tw, "%s\t%s\t%s\t%s\n", f.Kind, f.Name, f.Path, f.Detail)
 	}
+	_ = tw.Flush()
 	return b.String()
 }
 
@@ -116,11 +120,11 @@ func (r Report) FormatMarkdown() string {
 		b.WriteString("No findings.\n")
 		return b.String()
 	}
-	b.WriteString("| Kind | Name | Root | Path | Detail |\n")
-	b.WriteString("| --- | --- | --- | --- | --- |\n")
+	b.WriteString("| Kind | Name | Path | Detail |\n")
+	b.WriteString("| --- | --- | --- | --- |\n")
 	for _, f := range r.Findings {
-		fmt.Fprintf(&b, "| %s | %s | %s | %s | %s |\n",
-			f.Kind, f.Name, f.Root, f.Path, f.Detail)
+		fmt.Fprintf(&b, "| %s | %s | %s | %s |\n",
+			f.Kind, f.Name, f.Path, f.Detail)
 	}
 	return b.String()
 }

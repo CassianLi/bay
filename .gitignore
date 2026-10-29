@@ -1,2 +1,23 @@
-
 .worktrees/
+
+# Build / package output
+dist/
+*.exe
+*.test
+*.out
+bin/
+/bay
+
+# Module noise
+vendor/
+
+# Local scratch
+tmp/**
+!tmp/**/
+!tmp/**/.gitkeep
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store

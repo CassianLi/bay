@@ -24,6 +24,15 @@ func Execute() int {
 	return 0
 }
 
+func annotated(cmd *cobra.Command, key string) bool {
+	for c := cmd; c != nil; c = c.Parent() {
+		if c.Annotations[key] == "1" {
+			return true
+		}
+	}
+	return false
+}
+
 func newRootCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:           "bay",
@@ -38,15 +47,24 @@ func newRootCmd() *cobra.Command {
 				}
 				cfgPath = p
 			}
+			if annotated(cmd, "bay.skipStore") && annotated(cmd, "bay.skipConfigSave") {
+				return nil
+			}
+
 			var err error
 			cfg, err = config.LoadOrDefault(cfgPath)
 			if err != nil {
 				return err
 			}
-			if _, statErr := os.Stat(cfgPath); os.IsNotExist(statErr) {
-				if err := cfg.Save(cfgPath); err != nil {
-					return fmt.Errorf("save default config: %w", err)
+			if !annotated(cmd, "bay.skipConfigSave") {
+				if _, statErr := os.Stat(cfgPath); os.IsNotExist(statErr) {
+					if err := cfg.Save(cfgPath); err != nil {
+						return fmt.Errorf("save default config: %w", err)
+					}
 				}
+			}
+			if annotated(cmd, "bay.skipStore") {
+				return nil
 			}
 			dbPath, err := config.DefaultDBPath()
 			if err != nil {
@@ -66,6 +84,9 @@ func newRootCmd() *cobra.Command {
 		},
 	}
 	cmd.PersistentFlags().StringVar(&cfgPath, "config", "", "path to config.yaml (default: ~/.config/bay/config.yaml)")
+	cmd.AddCommand(newInstallCmd())
+	cmd.AddCommand(newSetupCmd())
+	cmd.AddCommand(newConfigCmd())
 	cmd.AddCommand(newScanCmd())
 	cmd.AddCommand(newLsCmd())
 	cmd.AddCommand(newShowCmd())

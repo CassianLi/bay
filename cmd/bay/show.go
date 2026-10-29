@@ -17,21 +17,26 @@ func newShowCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			out := cmd.OutOrStdout()
-			fmt.Fprintf(out, "name:\t%s\n", p.Name)
-			fmt.Fprintf(out, "root:\t%s\n", p.Root)
-			fmt.Fprintf(out, "path:\t%s\n", p.Path)
-			fmt.Fprintf(out, "status:\t%s\n", p.Status)
-			fmt.Fprintf(out, "purpose_known:\t%v\n", p.PurposeKnown)
-			fmt.Fprintf(out, "summary:\t%s\n", p.Summary)
-			fmt.Fprintf(out, "user_set_status:\t%v\n", p.UserSetStatus)
-			fmt.Fprintf(out, "missing:\t%v\n", p.Missing)
-			fmt.Fprintf(out, "last_seen_at:\t%s\n", p.LastSeenAt)
-			fmt.Fprintf(out, "last_moved_at:\t%s\n", p.LastMovedAt)
-			fmt.Fprintf(out, "created_at:\t%s\n", p.CreatedAt)
-			fmt.Fprintf(out, "updated_at:\t%s\n", p.UpdatedAt)
-			fmt.Fprintf(out, "signals:\t%s\n", p.Signals)
-			return nil
+			tw := newTable(cmd.OutOrStdout())
+			rows := [][2]string{
+				{"name", p.Name},
+				{"path", p.Path},
+				{"status", string(p.Status)},
+				{"purpose", formatPurpose(p.PurposeKnown)},
+				{"summary", p.Summary},
+				{"note", p.Note},
+				{"user_set_status", fmt.Sprintf("%v", p.UserSetStatus)},
+				{"missing", fmt.Sprintf("%v", p.Missing)},
+				{"last_seen_at", formatTime(p.LastSeenAt)},
+				{"last_moved_at", formatTime(p.LastMovedAt)},
+				{"created_at", formatTime(p.CreatedAt)},
+				{"updated_at", formatTime(p.UpdatedAt)},
+				{"signals", p.Signals},
+			}
+			for _, row := range rows {
+				fmt.Fprintf(tw, "%s\t%s\n", row[0], row[1])
+			}
+			return tw.Flush()
 		},
 	}
 	cmd.Flags().StringVar(&root, "root", "", "disambiguate by root path")

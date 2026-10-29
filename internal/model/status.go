@@ -1,6 +1,9 @@
 package model
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type Status string
 
@@ -13,10 +16,32 @@ const (
 	StatusTrash    Status = "trash"
 )
 
+// AllStatuses returns lifecycle statuses in canonical order.
+func AllStatuses() []Status {
+	return []Status{
+		StatusIdea,
+		StatusActive,
+		StatusPaused,
+		StatusKept,
+		StatusArchived,
+		StatusTrash,
+	}
+}
+
+// StatusValuesHint is a short pipe-separated list for CLI help and errors.
+func StatusValuesHint() string {
+	all := AllStatuses()
+	parts := make([]string, len(all))
+	for i, st := range all {
+		parts[i] = string(st)
+	}
+	return strings.Join(parts, "|")
+}
+
 func ParseStatus(s string) (Status, error) {
 	st := Status(s)
 	if !st.Valid() {
-		return "", fmt.Errorf("invalid status %q", s)
+		return "", fmt.Errorf("invalid status %q (want %s)", s, StatusValuesHint())
 	}
 	return st, nil
 }

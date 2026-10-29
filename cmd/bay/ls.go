@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/jinrunli/bay/internal/model"
 	"github.com/spf13/cobra"
 )
@@ -36,14 +34,20 @@ func newLsCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			out := cmd.OutOrStdout()
+			rows := make([][]string, 0, len(projects)+1)
+			rows = append(rows, []string{"NAME", "STATUS", "SUMMARY", "PATH"})
 			for _, p := range projects {
-				fmt.Fprintf(out, "%s\t%s\t%s\t%s\n", p.Name, p.Status, p.Root, p.Path)
+				rows = append(rows, []string{
+					p.Name,
+					string(p.Status),
+					listSummary(p.Summary, p.Signals, 40),
+					p.Path,
+				})
 			}
-			return nil
+			return writeAligned(cmd.OutOrStdout(), rows, 2)
 		},
 	}
-	cmd.Flags().StringVar(&statusStr, "status", "", "filter by status")
+	cmd.Flags().StringVar(&statusStr, "status", "", "filter by status ("+model.StatusValuesHint()+")")
 	cmd.Flags().BoolVar(&unknown, "unknown", false, "only projects with unknown purpose")
 	cmd.Flags().StringVar(&root, "root", "", "filter by root path")
 	return cmd

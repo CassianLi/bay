@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS projects (
   status TEXT NOT NULL,
   purpose_known INTEGER NOT NULL DEFAULT 0,
   summary TEXT NOT NULL DEFAULT '',
+  note TEXT NOT NULL DEFAULT '',
   signals TEXT NOT NULL DEFAULT '',
   user_set_status INTEGER NOT NULL DEFAULT 0,
   missing INTEGER NOT NULL DEFAULT 0,
@@ -41,6 +42,9 @@ CREATE TABLE IF NOT EXISTS projects (
   UNIQUE(root, name)
 );
 `
+
+const projectSelectCols = `id, name, root, path, status, purpose_known, summary, note, signals,
+       user_set_status, missing, last_seen_at, last_moved_at, created_at, updated_at`
 
 func Open(dbPath string) (*Store, error) {
 	if err := os.MkdirAll(filepath.Dir(dbPath), 0o755); err != nil {
@@ -58,7 +62,40 @@ func Open(dbPath string) (*Store, error) {
 		_ = db.Close()
 		return nil, fmt.Errorf("migrate: %w", err)
 	}
+	if err := ensureColumn(db, "projects", "note", "TEXT NOT NULL DEFAULT ''"); err != nil {
+		_ = db.Close()
+		return nil, fmt.Errorf("migrate note: %w", err)
+	}
 	return &Store{db: db}, nil
+}
+
+func ensureColumn(db *sql.DB, table, column, decl string) error {
+	rows, err := db.Query(`PRAGMA table_info(` + table + `)`)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var (
+			cid       int
+			name      string
+			ctype     string
+			notnull   int
+			dfltValue sql.NullString
+			pk        int
+		)
+		if err := rows.Scan(&cid, &name, &ctype, &notnull, &dfltValue, &pk); err != nil {
+			return err
+		}
+		if name == column {
+			return nil
+		}
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	_, err = db.Exec(`ALTER TABLE ` + table + ` ADD COLUMN ` + column + ` ` + decl)
+	return err
 }
 
 func (s *Store) Close() error {
@@ -99,11 +136,11 @@ func (s *Store) UpsertScan(p model.Project) error {
 	case errors.Is(err, sql.ErrNoRows):
 		_, err = tx.Exec(`
 INSERT INTO projects (
-  name, root, path, status, purpose_known, summary, signals,
+  name, root, path, status, purpose_known, summary, note, signals,
   user_set_status, missing, last_seen_at, last_moved_at, created_at, updated_at
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?)`,
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?)`,
 			p.Name, p.Root, p.Path, string(p.Status),
-			boolToInt(p.PurposeKnown), p.Summary, p.Signals,
+			boolToInt(p.PurposeKnown), p.Summary, p.Note, p.Signals,
 			boolToInt(p.UserSetStatus), lastSeen, formatTime(p.LastMovedAt),
 			created, updated,
 		)
@@ -133,8 +170,7 @@ WHERE id = ?`,
 func (s *Store) GetByName(name, root string) (model.Project, error) {
 	if root != "" {
 		row := s.db.QueryRow(`
-SELECT id, name, root, path, status, purpose_known, summary, signals,
-       user_set_status, missing, last_seen_at, last_moved_at, created_at, updated_at
+SELECT `+projectSelectCols+`
 FROM projects WHERE name = ? AND root = ?`, name, root)
 		p, err := scanProject(row)
 		if errors.Is(err, sql.ErrNoRows) {
@@ -144,8 +180,7 @@ FROM projects WHERE name = ? AND root = ?`, name, root)
 	}
 
 	rows, err := s.db.Query(`
-SELECT id, name, root, path, status, purpose_known, summary, signals,
-       user_set_status, missing, last_seen_at, last_moved_at, created_at, updated_at
+SELECT `+projectSelectCols+`
 FROM projects WHERE name = ?`, name)
 	if err != nil {
 		return model.Project{}, err
@@ -196,8 +231,7 @@ func (s *Store) List(f model.ListFilter) ([]model.Project, error) {
 	}
 
 	query := `
-SELECT id, name, root, path, status, purpose_known, summary, signals,
-       user_set_status, missing, last_seen_at, last_moved_at, created_at, updated_at
+SELECT ` + projectSelectCols + `
 FROM projects`
 	if len(conds) > 0 {
 		query += " WHERE " + strings.Join(conds, " AND ")
@@ -225,10 +259,10 @@ func (s *Store) UpdateMeta(p model.Project) error {
 	now := time.Now().UTC().Format(time.RFC3339)
 	res, err := s.db.Exec(`
 UPDATE projects SET
-  status = ?, summary = ?, purpose_known = ?, user_set_status = ?,
+  status = ?, summary = ?, note = ?, purpose_known = ?, user_set_status = ?,
   path = ?, last_moved_at = ?, updated_at = ?
 WHERE root = ? AND name = ?`,
-		string(p.Status), p.Summary, boolToInt(p.PurposeKnown), boolToInt(p.UserSetStatus),
+		string(p.Status), p.Summary, p.Note, boolToInt(p.PurposeKnown), boolToInt(p.UserSetStatus),
 		p.Path, formatTime(p.LastMovedAt), now,
 		p.Root, p.Name,
 	)
@@ -289,7 +323,7 @@ func scanProject(row scannable) (model.Project, error) {
 	)
 	err := row.Scan(
 		&p.ID, &p.Name, &p.Root, &p.Path, &status,
-		&purposeKnown, &p.Summary, &p.Signals,
+		&purposeKnown, &p.Summary, &p.Note, &p.Signals,
 		&userSetStatus, &missing,
 		&lastSeen, &lastMoved, &created, &updated,
 	)
