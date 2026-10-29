@@ -4,8 +4,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/jinrunli/bay/internal/model"
-	"github.com/jinrunli/bay/internal/paths"
+	"github.com/CassianLi/bay/internal/model"
+	"github.com/CassianLi/bay/internal/paths"
 )
 
 func TestExpectedPath(t *testing.T) {

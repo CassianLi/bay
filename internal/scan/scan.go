@@ -7,10 +7,10 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/jinrunli/bay/internal/config"
-	"github.com/jinrunli/bay/internal/model"
-	"github.com/jinrunli/bay/internal/paths"
-	"github.com/jinrunli/bay/internal/store"
+	"github.com/CassianLi/bay/internal/config"
+	"github.com/CassianLi/bay/internal/model"
+	"github.com/CassianLi/bay/internal/paths"
+	"github.com/CassianLi/bay/internal/store"
 )
 
 type Result struct {

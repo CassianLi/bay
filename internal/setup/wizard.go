@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/jinrunli/bay/internal/config"
+	"github.com/CassianLi/bay/internal/config"
 )
 
 // Wizard runs an interactive config flow. base is the starting config (usually Default()).

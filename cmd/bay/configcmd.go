@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/jinrunli/bay/internal/config"
+	"github.com/CassianLi/bay/internal/config"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 )

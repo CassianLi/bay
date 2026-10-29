@@ -8,11 +8,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/jinrunli/bay/internal/config"
-	"github.com/jinrunli/bay/internal/install"
-	"github.com/jinrunli/bay/internal/scan"
-	"github.com/jinrunli/bay/internal/setup"
-	"github.com/jinrunli/bay/internal/store"
+	"github.com/CassianLi/bay/internal/config"
+	"github.com/CassianLi/bay/internal/install"
+	"github.com/CassianLi/bay/internal/scan"
+	"github.com/CassianLi/bay/internal/setup"
+	"github.com/CassianLi/bay/internal/store"
 	"github.com/spf13/cobra"
 )
 

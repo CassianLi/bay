@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/jinrunli/bay/internal/model"
-	"github.com/jinrunli/bay/internal/paths"
+	"github.com/CassianLi/bay/internal/model"
+	"github.com/CassianLi/bay/internal/paths"
 )
 
 type Plan struct {

@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/jinrunli/bay/internal/model"
-	"github.com/jinrunli/bay/internal/move"
+	"github.com/CassianLi/bay/internal/model"
+	"github.com/CassianLi/bay/internal/move"
 )
 
 func TestPlanAndApplyArchive(t *testing.T) {

@@ -1,4 +1,4 @@
-module github.com/jinrunli/bay
+module github.com/CassianLi/bay
 
 go 1.26.3
 

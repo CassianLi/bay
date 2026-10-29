@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/jinrunli/bay/internal/scan"
+	"github.com/CassianLi/bay/internal/scan"
 	"github.com/spf13/cobra"
 )
 

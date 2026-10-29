@@ -5,10 +5,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/jinrunli/bay/internal/config"
-	"github.com/jinrunli/bay/internal/model"
-	"github.com/jinrunli/bay/internal/scan"
-	"github.com/jinrunli/bay/internal/store"
+	"github.com/CassianLi/bay/internal/config"
+	"github.com/CassianLi/bay/internal/model"
+	"github.com/CassianLi/bay/internal/scan"
+	"github.com/CassianLi/bay/internal/store"
 )
 
 func TestRunDiscoversDailyAndPMAndLegacy(t *testing.T) {

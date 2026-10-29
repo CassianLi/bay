@@ -4,7 +4,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/jinrunli/bay/internal/model"
+	"github.com/CassianLi/bay/internal/model"
 )
 
 func ExpectedPath(root, name, pmDir string, st model.Status) string {

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/jinrunli/bay/internal/model"
+	"github.com/CassianLi/bay/internal/model"
 	"github.com/spf13/cobra"
 )
 

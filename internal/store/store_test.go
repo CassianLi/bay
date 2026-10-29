@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jinrunli/bay/internal/model"
-	"github.com/jinrunli/bay/internal/store"
+	"github.com/CassianLi/bay/internal/model"
+	"github.com/CassianLi/bay/internal/store"
 )
 
 func TestUpsertScanDoesNotClobberSummaryOrLockedStatus(t *testing.T) {

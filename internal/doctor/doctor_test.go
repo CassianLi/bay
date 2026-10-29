@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jinrunli/bay/internal/doctor"
-	"github.com/jinrunli/bay/internal/model"
-	"github.com/jinrunli/bay/internal/scan"
+	"github.com/CassianLi/bay/internal/doctor"
+	"github.com/CassianLi/bay/internal/model"
+	"github.com/CassianLi/bay/internal/scan"
 )
 
 func TestBuildFindings(t *testing.T) {

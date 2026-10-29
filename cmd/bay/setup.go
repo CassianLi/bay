@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/jinrunli/bay/internal/config"
-	"github.com/jinrunli/bay/internal/setup"
+	"github.com/CassianLi/bay/internal/config"
+	"github.com/CassianLi/bay/internal/setup"
 	"github.com/spf13/cobra"
 )
 

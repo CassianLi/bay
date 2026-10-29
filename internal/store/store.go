@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jinrunli/bay/internal/model"
+	"github.com/CassianLi/bay/internal/model"
 	_ "modernc.org/sqlite"
 )
 

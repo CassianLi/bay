@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/jinrunli/bay/internal/config"
+	"github.com/CassianLi/bay/internal/config"
 )
 
 func TestSaveLoadRoundTrip(t *testing.T) {
