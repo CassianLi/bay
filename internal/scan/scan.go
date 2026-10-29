@@ -31,6 +31,10 @@ func Run(cfg config.Config, st *store.Store) (Result, error) {
 		}
 		fi, err := os.Stat(rootAbs)
 		if err != nil {
+			if os.IsNotExist(err) {
+				fmt.Fprintf(os.Stderr, "bay: warning: skipping missing root %q\n", rootAbs)
+				continue
+			}
 			return res, fmt.Errorf("stat root %q: %w", rootAbs, err)
 		}
 		if !fi.IsDir() {

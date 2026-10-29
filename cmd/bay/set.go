@@ -45,8 +45,14 @@ func newSetCmd() *cobra.Command {
 				changedStatus = true
 			}
 			if cmd.Flags().Changed("summary") {
-				p.Summary = summary
-				p.PurposeKnown = true
+				trimmed := strings.TrimSpace(summary)
+				if trimmed != "" {
+					p.Summary = trimmed
+					p.PurposeKnown = true
+				} else {
+					p.Summary = ""
+					p.PurposeKnown = false
+				}
 			}
 
 			out := cmd.OutOrStdout()

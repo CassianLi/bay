@@ -53,3 +53,30 @@ func TestRunDiscoversDailyAndPMAndLegacy(t *testing.T) {
 		t.Fatalf("%+v", gamma)
 	}
 }
+
+func TestRunSkipsMissingRootContinuesOthers(t *testing.T) {
+	valid := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(valid, "proj"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	missing := filepath.Join(t.TempDir(), "does-not-exist")
+
+	db := filepath.Join(t.TempDir(), "t.db")
+	st, err := store.Open(db)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer st.Close()
+
+	cfg := config.Config{Roots: []string{missing, valid}, PMDir: "_pm", StaleAfterDays: 90}
+	res, err := scan.Run(cfg, st)
+	if err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	if res.Added != 1 {
+		t.Fatalf("added=%d want 1", res.Added)
+	}
+	if _, err := st.GetByName("proj", valid); err != nil {
+		t.Fatalf("expected proj from valid root: %v", err)
+	}
+}
